@@ -1,0 +1,26 @@
+{
+  "name": "safevax-repo",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/react": "18.3.24",
+    "@types/react-dom": "18.3.7"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "18.3.24",
+      "@types/react-dom": "18.3.7"
+    }
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}

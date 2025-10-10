@@ -1,0 +1,45 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@ant-design/icons": "5.x",
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.90.2",
+    "@tanstack/react-query-devtools": "^5.90.2",
+    "antd": "^5.27.4",
+    "async-mutex": "^0.5.0",
+    "axios": "^1.12.2",
+    "dayjs": "^1.11.18",
+    "i18next": "^25.5.2",
+    "lodash": "^4.17.21",
+    "next": "15.5.4",
+    "next-i18next": "^15.4.2",
+    "query-string": "^9.3.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.63.0",
+    "react-i18next": "^16.0.0",
+    "spring-filter-query-builder": "^1.1.1",
+    "zod": "^4.1.11",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/lodash": "^4.17.20",
+    "@types/node": "^20",
+    "@types/react": "18.3.24",
+    "@types/react-dom": "18.3.7",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

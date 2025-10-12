@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Badge, Button, Card, Image, Rate } from "antd";
 import { formatPrice } from "@/utils/formatPrice";
+import { getImageProps } from "@/utils/imageUtils";
 import { useRouter } from "next/navigation";
 import { useMessage } from "../share/MessageProvider";
 import useCartStore from "@/store/cartStore";
@@ -33,10 +34,13 @@ const VaccineCard = ({ vaccine }: VaccineCardProps) => {
       cover={
         <div className="relative overflow-hidden" style={{ height: "150px" }}>
           <Image
-            alt={vaccine.name}
-            src={vaccine.image}
+            {...getImageProps(vaccine.image, vaccine.name)}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             style={{ objectFit: "cover" }}
+            preview={{
+              mask: <EyeOutlined />,
+              maskClassName: "rounded-lg"
+            }}
           />
           <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <Button

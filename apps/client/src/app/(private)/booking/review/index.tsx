@@ -1,8 +1,20 @@
 import { CheckCircleOutlined } from "@ant-design/icons";
-import { Card, Button, Typography, Checkbox, Image, FormInstance, Divider } from "antd";
+import {
+  Card,
+  Button,
+  Typography,
+  Checkbox,
+  Image,
+  FormInstance,
+  Divider,
+} from "antd";
 import { formatPrice } from "@/utils/formatPrice";
 import { paymentMethods } from "@/components/payment";
-import { IVaccine, ICenter, BuildQueryParams } from "@/types/backend";
+import {
+  IVaccine,
+  BuildQueryParams,
+  IDoseSchedule,
+} from "@/types/backend";
 import { useCenter } from "@/hooks/useCenter";
 import { useFamilyMember } from "@/hooks/useFamilyMember";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/constants";
@@ -24,6 +36,28 @@ interface ReviewDoseSchedule {
   centerId: string | number;
 }
 
+// Centralized booking data interface (matching parent component)
+interface BookingData {
+  vaccine: IVaccine | null;
+  appointmentData: {
+    bookingFor: "self" | "family";
+    familyMemberId?: number;
+    firstDoseDate?: IDoseSchedule;
+    firstDoseTime?: string;
+    firstDoseCenter?: string;
+    doseSchedules: IDoseSchedule[];
+  };
+  paymentData: {
+    selectedPayment: string;
+    cardNumber?: string;
+    expiryDate?: string;
+    cvv?: string;
+    holderName?: string;
+  };
+  finalTotal: number;
+  isCompleted: boolean;
+}
+
 interface ReviewProps {
   loading: boolean;
   finalTotal: number;
@@ -31,6 +65,7 @@ interface ReviewProps {
   paymentForm: FormInstance;
   bookingForm: FormInstance;
   vaccine: IVaccine;
+  bookingData: BookingData; // Add centralized data
   setCurrentStep: (currentStep: number) => void;
   handlePlaceBooking: () => void;
 }
@@ -38,14 +73,11 @@ interface ReviewProps {
 const ReviewSection = ({
   loading,
   finalTotal,
-  selectedPayment,
-  paymentForm,
-  bookingForm,
   vaccine,
+  bookingData,
   setCurrentStep,
   handlePlaceBooking,
 }: ReviewProps) => {
-  // Get data from hooks
   const filter: BuildQueryParams = {
     current: DEFAULT_PAGE,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -53,24 +85,27 @@ const ReviewSection = ({
   const { data: centers } = useCenter(filter);
   const { data: families } = useFamilyMember(filter);
 
-  // Get appointment data from forms
-  const appointmentData = bookingForm.getFieldsValue();
+  const appointmentData = bookingData.appointmentData;
+  const paymentData = bookingData.paymentData;
   const doseSchedules = appointmentData.doseSchedules || [];
+  const vaccineInfo = bookingData.vaccine || vaccine;
 
-  // Debug logging for appointment data
-  console.log("📋 Review - Full appointment data:", appointmentData);
+  // Debug logging for centralized booking data
+  console.log("📋 Review - BookingData:", bookingData);
+  console.log("📋 Review - Appointment data:", appointmentData);
+  console.log("📋 Review - Payment data:", paymentData);
   console.log("📋 Review - Dose schedules:", doseSchedules);
-  console.log("📋 Review - Centers available:", centers?.result?.length || 0);
-  console.log("📋 Review - Families available:", families?.result?.length || 0);
+  console.log("📋 Review - Final total:", bookingData.finalTotal);
+  console.log("📋 Review - Is completed:", bookingData.isCompleted);
 
   // Helper function to get center info by ID
   const getCenterById = (centerId: string) => {
-    return centers?.result?.find(center => center.centerId === centerId);
+    return centers?.result?.find((center) => center.centerId === centerId);
   };
 
   // Helper function to get family member info by ID
   const getFamilyMemberById = (memberId: number) => {
-    return families?.result?.find(member => member.id === memberId);
+    return families?.result?.find((member) => member.id === memberId);
   };
 
   return (
@@ -93,57 +128,88 @@ const ReviewSection = ({
           <div className="!flex !flex-col md:!flex-row !items-start !gap-4">
             <div className="!flex-shrink-0">
               <Image
-                src={vaccine?.image}
-                alt={vaccine?.name}
+                src={vaccineInfo?.image}
+                alt={vaccineInfo?.name}
                 className="!w-20 !h-20 !object-cover !rounded-xl !border-2 !border-blue-300"
                 fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1xnG4W+Q2yCQYRqEAjQBJ9BW2XjeAhMBAh4iI3P/k="
               />
             </div>
-            
+
             <div className="!flex-1">
               <Text strong className="!block !text-xl !text-blue-800 !mb-2">
-                {vaccine?.name}
+                {vaccineInfo?.name}
+                <span className="!ml-2 !text-sm !bg-green-100 !text-green-700 !px-2 !py-1 !rounded">
+                  📊 BookingData
+                </span>
               </Text>
-              
+
               <div className="!grid !grid-cols-1 md:!grid-cols-2 !gap-4">
                 <div className="!bg-white !p-3 !rounded-lg !border">
-                  <Text className="!text-xs !text-gray-500 !block">🌍 Xuất xứ</Text>
-                  <Text strong className="!text-sm">{vaccine?.country}</Text>
+                  <Text className="!text-xs !text-gray-500 !block">
+                    🌍 Xuất xứ
+                  </Text>
+                  <Text strong className="!text-sm">
+                    {vaccineInfo?.country}
+                  </Text>
                 </div>
-                
+
                 <div className="!bg-white !p-3 !rounded-lg !border">
-                  <Text className="!text-xs !text-gray-500 !block">💉 Số mũi tiêm</Text>
-                  <Text strong className="!text-sm">{vaccine?.dosesRequired} mũi</Text>
+                  <Text className="!text-xs !text-gray-500 !block">
+                    💉 Số mũi tiêm
+                  </Text>
+                  <Text strong className="!text-sm">
+                    {vaccineInfo?.dosesRequired} mũi
+                  </Text>
                 </div>
-                
+
                 <div className="!bg-white !p-3 !rounded-lg !border">
-                  <Text className="!text-xs !text-gray-500 !block">📅 Khoảng cách</Text>
-                  <Text strong className="!text-sm">{vaccine?.duration} ngày</Text>
+                  <Text className="!text-xs !text-gray-500 !block">
+                    📅 Khoảng cách
+                  </Text>
+                  <Text strong className="!text-sm">
+                    {vaccineInfo?.duration} ngày
+                  </Text>
                 </div>
-                
+
                 <div className="!bg-white !p-3 !rounded-lg !border">
-                  <Text className="!text-xs !text-gray-500 !block">💰 Giá mỗi mũi</Text>
-                  <Text strong className="!text-sm !text-green-600">{formatPrice(vaccine?.price || 0)}</Text>
+                  <Text className="!text-xs !text-gray-500 !block">
+                    💰 Giá mỗi mũi
+                  </Text>
+                  <Text strong className="!text-sm !text-green-600">
+                    {formatPrice(vaccineInfo?.price || 0)}
+                  </Text>
                 </div>
               </div>
-              
-              {vaccine?.description && (
+
+              {vaccineInfo?.description && (
                 <div className="!mt-3 !bg-white !p-3 !rounded-lg !border">
-                  <Text className="!text-xs !text-gray-500 !block">📝 Mô tả</Text>
-                  <Text className="!text-sm !text-gray-700">{vaccine.description}</Text>
+                  <Text className="!text-xs !text-gray-500 !block">
+                    📝 Mô tả
+                  </Text>
+                  <Text className="!text-sm !text-gray-700">
+                    {vaccineInfo.description}
+                  </Text>
                 </div>
               )}
             </div>
-            
+
             <div className="!flex-shrink-0 !text-right">
               <div className="!bg-white !p-4 !rounded-lg !border !text-center">
-                <Text className="!text-sm !text-gray-500 !block !mb-1">Tổng chi phí</Text>
+                <Text className="!text-sm !text-gray-500 !block !mb-1">
+                  Tổng chi phí
+                </Text>
                 <Text strong className="!text-2xl !text-blue-600 !block">
-                  {formatPrice(finalTotal)}
+                  {formatPrice(bookingData.finalTotal)}
                 </Text>
                 <Text className="!text-xs !text-gray-500">
-                  {formatPrice(vaccine?.price || 0)} x {vaccine?.dosesRequired} mũi
+                  {formatPrice(vaccineInfo?.price || 0)} x{" "}
+                  {vaccineInfo?.dosesRequired} mũi
                 </Text>
+                <div className="!mt-2 !pt-2 !border-t">
+                  <Text className="!text-xs !text-green-600">
+                    💰 Từ BookingData State
+                  </Text>
+                </div>
               </div>
             </div>
           </div>
@@ -155,16 +221,23 @@ const ReviewSection = ({
         <Title level={4} className="!mb-4">
           📅 Lịch tiêm chi tiết ({doseSchedules.length} mũi)
         </Title>
-        
+
         {doseSchedules.length > 0 && (
           <div className="!mb-4 !p-3 !bg-blue-100 !border !border-blue-300 !rounded-lg">
             <Text className="!text-sm !text-blue-700">
-              <strong>Ngày bắt đầu:</strong> {appointmentData.firstDoseDate ? 
-                dayjs(appointmentData.firstDoseDate).format("DD/MM/YYYY") : 
-                (doseSchedules[0]?.date ? dayjs(doseSchedules[0].date).format("DD/MM/YYYY") : "Chưa xác định")
-              } | 
-              <strong> Giờ:</strong> {appointmentData.firstDoseTime || doseSchedules[0]?.time || "Chưa xác định"} | 
-              <strong> Trung tâm:</strong> {getCenterById(String(doseSchedules[0]?.centerId || ""))?.name || `ID: ${doseSchedules[0]?.centerId}`}
+              <strong>Ngày bắt đầu:</strong>{" "}
+              {appointmentData.firstDoseDate
+                ? dayjs(appointmentData.firstDoseDate.date).format("DD/MM/YYYY")
+                : doseSchedules[0]?.date
+                ? dayjs(doseSchedules[0].date).format("DD/MM/YYYY")
+                : "Chưa xác định"}{" "}
+              |<strong> Giờ:</strong>{" "}
+              {appointmentData.firstDoseTime ||
+                doseSchedules[0]?.time ||
+                "Chưa xác định"}{" "}
+              |<strong> Trung tâm:</strong>{" "}
+              {getCenterById(String(doseSchedules[0]?.centerId || ""))?.name ||
+                `ID: ${doseSchedules[0]?.centerId}`}
             </Text>
           </div>
         )}
@@ -172,27 +245,29 @@ const ReviewSection = ({
           {doseSchedules.map((schedule: ReviewDoseSchedule, index: number) => {
             // Handle both dayjs object and ISO string formats
             let scheduleDate = schedule.date;
-            if (typeof scheduleDate === 'string') {
+            if (typeof scheduleDate === "string") {
               scheduleDate = dayjs(scheduleDate);
             }
-            
+
             const center = getCenterById(String(schedule.centerId) || "");
             const isFirstDose = index === 0;
-            
+
             console.log(`📋 Review - Dose ${index + 1}:`, {
-              date: scheduleDate?.format ? scheduleDate.format("DD/MM/YYYY") : "Invalid date",
+              date: scheduleDate?.format
+                ? scheduleDate.format("DD/MM/YYYY")
+                : "Invalid date",
               time: schedule.time,
               centerId: schedule.centerId,
-              centerName: center?.name
+              centerName: center?.name,
             });
-            
+
             return (
               <Card
                 key={index}
                 size="small"
                 className={`!transition-all !border !border-solid ${
-                  isFirstDose 
-                    ? "!border-blue-300 !bg-blue-50" 
+                  isFirstDose
+                    ? "!border-blue-300 !bg-blue-50"
                     : "!border-green-300 !bg-green-50"
                 }`}
               >
@@ -217,28 +292,36 @@ const ReviewSection = ({
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="!grid !grid-cols-1 md:!grid-cols-2 !gap-4 !bg-white !p-4 !rounded-lg !border">
                       <div>
-                        <Text className="!text-sm !text-gray-500 !block !mb-1">📅 Ngày tiêm:</Text>
+                        <Text className="!text-sm !text-gray-500 !block !mb-1">
+                          📅 Ngày tiêm:
+                        </Text>
                         <Text strong className="!text-base !text-gray-800">
-                          {scheduleDate && scheduleDate.format 
+                          {scheduleDate && scheduleDate.format
                             ? scheduleDate.format("dddd, DD/MM/YYYY")
-                            : "Chưa chọn ngày"
-                          }
+                            : "Chưa chọn ngày"}
                         </Text>
                       </div>
-                      
+
                       <div>
-                        <Text className="!text-sm !text-gray-500 !block !mb-1">⏰ Giờ tiêm:</Text>
+                        <Text className="!text-sm !text-gray-500 !block !mb-1">
+                          ⏰ Giờ tiêm:
+                        </Text>
                         <Text strong className="!text-base !text-gray-800">
                           {schedule.time || "Chưa chọn giờ"}
                         </Text>
                       </div>
-                      
+
                       <div className="md:!col-span-2 !mt-3 !pt-3 !border-t !border-gray-200">
-                        <Text className="!text-sm !text-gray-500 !block !mb-1">🏥 Trung tâm tiêm:</Text>
-                        <Text strong className="!text-base !text-gray-800 !block">
+                        <Text className="!text-sm !text-gray-500 !block !mb-1">
+                          🏥 Trung tâm tiêm:
+                        </Text>
+                        <Text
+                          strong
+                          className="!text-base !text-gray-800 !block"
+                        >
                           {center?.name || `Trung tâm ID: ${schedule.centerId}`}
                         </Text>
                         {center && center.address && (
@@ -249,12 +332,14 @@ const ReviewSection = ({
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="!text-right !ml-4">
                     <div className="!bg-white !p-3 !rounded-lg !border !text-center">
-                      <Text className="!text-xs !text-gray-500 !block !mb-1">Giá mũi tiêm</Text>
+                      <Text className="!text-xs !text-gray-500 !block !mb-1">
+                        Giá mũi tiêm
+                      </Text>
                       <Text strong className="!text-lg !text-blue-600">
-                        {formatPrice(vaccine?.price || 0)}
+                        {formatPrice(vaccineInfo?.price || 0)}
                       </Text>
                     </div>
                   </div>
@@ -274,37 +359,57 @@ const ReviewSection = ({
           <div className="!grid !grid-cols-1 md:!grid-cols-2 !gap-6">
             {/* Đối tượng tiêm chủng */}
             <div>
-              <Text className="!text-sm !text-gray-500 !block !mb-2">👤 Đối tượng tiêm chủng:</Text>
+              <Text className="!text-sm !text-gray-500 !block !mb-2">
+                👤 Đối tượng tiêm chủng:
+              </Text>
               <div className="!bg-white !p-3 !rounded-lg !border">
                 <Text strong className="!block !text-base">
-                  {appointmentData.bookingFor === "family" ? "Thành viên gia đình" : "Bản thân"}
+                  {appointmentData.bookingFor === "family"
+                    ? "Thành viên gia đình"
+                    : "Bản thân"}
                 </Text>
-                {appointmentData.bookingFor === "family" && appointmentData.familyMemberId && (
-                  <div className="!mt-2">
-                    <Text className="!text-sm !text-gray-600">Tên:</Text>
-                    <Text strong className="!ml-2 !text-sm">
-                      {getFamilyMemberById(appointmentData.familyMemberId)?.fullName || "Đang tải..."}
-                    </Text>
-                  </div>
-                )}
+                {appointmentData.bookingFor === "family" &&
+                  appointmentData.familyMemberId && (
+                    <div className="!mt-2">
+                      <Text className="!text-sm !text-gray-600">Tên:</Text>
+                      <Text strong className="!ml-2 !text-sm">
+                        {getFamilyMemberById(appointmentData.familyMemberId)
+                          ?.fullName || "Đang tải..."}
+                      </Text>
+                    </div>
+                  )}
               </div>
             </div>
 
             {/* Phương thức thanh toán */}
             <div>
-              <Text className="!text-sm !text-gray-500 !block !mb-2">💳 Phương thức thanh toán:</Text>
+              <Text className="!text-sm !text-gray-500 !block !mb-2">
+                💳 Phương thức thanh toán:
+              </Text>
               <div className="!bg-white !p-3 !rounded-lg !border">
                 <div className="!flex !items-center !gap-2">
-                  {paymentMethods.find((m) => m.id === selectedPayment)?.icon}
+                  {
+                    paymentMethods.find(
+                      (m) => m.id === paymentData.selectedPayment
+                    )?.icon
+                  }
                   <Text strong>
-                    {paymentMethods.find((m) => m.id === selectedPayment)?.name}
+                    {
+                      paymentMethods.find(
+                        (m) => m.id === paymentData.selectedPayment
+                      )?.name
+                    }
                   </Text>
+                  <span className="!ml-2 !text-xs !bg-green-100 !text-green-700 !px-2 !py-1 !rounded">
+                    📊 BookingData
+                  </span>
                 </div>
-                {selectedPayment === "card" && (
-                  <Text type="secondary" className="!text-sm !mt-2">
-                    Thẻ: **** **** **** {paymentForm.getFieldValue("cardNumber")?.slice(-4)}
-                  </Text>
-                )}
+                {paymentData.selectedPayment === "card" &&
+                  paymentData.cardNumber && (
+                    <Text type="secondary" className="!text-sm !mt-2">
+                      Thẻ: **** **** **** {paymentData.cardNumber?.slice(-4)}
+                    </Text>
+                  )}
               </div>
             </div>
           </div>
@@ -313,28 +418,58 @@ const ReviewSection = ({
           <Divider />
           <div className="!grid !grid-cols-2 md:!grid-cols-5 !gap-4 !text-center">
             <div className="!bg-white !p-3 !rounded-lg !border">
-              <Text className="!text-xs !text-gray-500 !block">Tổng mũi tiêm</Text>
-              <Text strong className="!text-lg !text-blue-600">{vaccine?.dosesRequired || 0}</Text>
+              <Text className="!text-xs !text-gray-500 !block">
+                Tổng mũi tiêm
+              </Text>
+              <Text strong className="!text-lg !text-blue-600">
+                {vaccine?.dosesRequired || 0}
+              </Text>
             </div>
             <div className="!bg-white !p-3 !rounded-lg !border">
-              <Text className="!text-xs !text-gray-500 !block">Khoảng cách</Text>
-              <Text strong className="!text-lg !text-green-600">{vaccine?.duration || 0} ngày</Text>
+              <Text className="!text-xs !text-gray-500 !block">
+                Khoảng cách
+              </Text>
+              <Text strong className="!text-lg !text-green-600">
+                {vaccine?.duration || 0} ngày
+              </Text>
             </div>
             <div className="!bg-white !p-3 !rounded-lg !border">
-              <Text className="!text-xs !text-gray-500 !block">Lịch đã đặt</Text>
-              <Text strong className={`!text-lg ${doseSchedules.length === (vaccine?.dosesRequired || 0) ? '!text-green-600' : '!text-orange-600'}`}>
+              <Text className="!text-xs !text-gray-500 !block">
+                Lịch đã đặt
+              </Text>
+              <Text
+                strong
+                className={`!text-lg ${
+                  doseSchedules.length === (vaccine?.dosesRequired || 0)
+                    ? "!text-green-600"
+                    : "!text-orange-600"
+                }`}
+              >
                 {doseSchedules.length} / {vaccine?.dosesRequired || 0}
               </Text>
             </div>
             <div className="!bg-white !p-3 !rounded-lg !border">
               <Text className="!text-xs !text-gray-500 !block">Trạng thái</Text>
-              <Text strong className={`!text-sm ${doseSchedules.length === (vaccine?.dosesRequired || 0) ? '!text-green-600' : '!text-orange-600'}`}>
-                {doseSchedules.length === (vaccine?.dosesRequired || 0) ? '✓ Hoàn thành' : '⚠ Chưa đủ'}
+              <Text
+                strong
+                className={`!text-sm ${
+                  doseSchedules.length === (vaccine?.dosesRequired || 0)
+                    ? "!text-green-600"
+                    : "!text-orange-600"
+                }`}
+              >
+                {doseSchedules.length === (vaccine?.dosesRequired || 0)
+                  ? "✓ Hoàn thành"
+                  : "⚠ Chưa đủ"}
               </Text>
             </div>
             <div className="!bg-white !p-3 !rounded-lg !border">
-              <Text className="!text-xs !text-gray-500 !block">Tổng thanh toán</Text>
-              <Text strong className="!text-lg !text-red-600">{formatPrice(finalTotal)}</Text>
+              <Text className="!text-xs !text-gray-500 !block">
+                Tổng thanh toán
+              </Text>
+              <Text strong className="!text-lg !text-red-600">
+                {formatPrice(finalTotal)}
+              </Text>
             </div>
           </div>
         </Card>
@@ -349,7 +484,11 @@ const ReviewSection = ({
           <div className="!space-y-3">
             <div className="!flex !justify-between !items-center">
               <Text>Chi phí vaccine ({vaccine?.dosesRequired} mũi):</Text>
-              <Text>{formatPrice((vaccine?.price || 0) * (vaccine?.dosesRequired || 1))}</Text>
+              <Text>
+                {formatPrice(
+                  (vaccine?.price || 0) * (vaccine?.dosesRequired || 1)
+                )}
+              </Text>
             </div>
             <div className="!flex !justify-between !items-center">
               <Text>Phí dịch vụ:</Text>
@@ -362,7 +501,9 @@ const ReviewSection = ({
             <Divider />
             <div className="!flex !justify-between !items-center !text-lg">
               <Text strong>Tổng cộng:</Text>
-              <Text strong className="!text-xl !text-blue-600">{formatPrice(finalTotal)}</Text>
+              <Text strong className="!text-xl !text-blue-600">
+                {formatPrice(finalTotal)}
+              </Text>
             </div>
           </div>
         </div>

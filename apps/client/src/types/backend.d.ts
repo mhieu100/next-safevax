@@ -65,6 +65,12 @@ export interface IVaccine {
   reviews: number;
 }
 
+export interface IDoseSchedule {
+  doseNumber: number;
+  date: Dayjs;
+  time: string;
+  centerId: string;
+}
 
 export interface ICenter {
   centerId: string;
@@ -79,6 +85,30 @@ export interface ICenter {
 export interface ICartItem {
   vaccine: IVaccine;
   quantity: number;
+}
+
+export interface IBookingData {
+  vaccine: IVaccine | null;
+
+  appointmentData: {
+    bookingFor: "self" | "family";
+    familyMemberId?: number;
+    firstDoseDate?: Dayjs;
+    firstDoseTime?: string;
+    firstDoseCenter?: string;
+    doseSchedules: IDoseSchedule[];
+  };
+
+  paymentData: {
+    selectedPayment: string;
+    cardNumber?: string;
+    expiryDate?: string;
+    cvv?: string;
+    holderName?: string;
+  };
+
+  finalTotal: number;
+  isCompleted: boolean;
 }
 
 export interface BuildQueryParams {

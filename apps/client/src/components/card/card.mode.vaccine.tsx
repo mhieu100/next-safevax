@@ -1,5 +1,6 @@
 import useCartStore from "@/store/cartStore";
 import { formatPrice } from "@/utils/formatPrice";
+import { getImageProps } from "@/utils/imageUtils";
 import {
   ClockCircleOutlined,
   EyeOutlined,
@@ -45,8 +46,7 @@ const VaccineModeCard = ({ vaccine }: VaccineModeCardProps) => {
         >
           <div className="w-32 h-32 relative">
             <Image
-              src={vaccine.image}
-              alt={vaccine.name}
+              {...getImageProps(vaccine.image, vaccine.name)}
               style={{ objectFit: "cover" }}
               className="rounded-lg group-hover:scale-105 transition-transform"
             />

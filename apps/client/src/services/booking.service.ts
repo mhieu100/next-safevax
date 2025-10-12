@@ -5,6 +5,7 @@ import { PaymentResponse } from "./order.service";
 export interface BookingRequest {
   vaccineId: number;
   familyMemberId?: number;
+  centerId: number;
   firstDoseDate: string;
   firstDoseTime: string;
   amount: number;
@@ -13,8 +14,8 @@ export interface BookingRequest {
 }
 
 export interface DoseSchedule {
-  date: string; 
-  time: string; 
+  date: string;
+  time: string;
   centerId: number;
 }
 

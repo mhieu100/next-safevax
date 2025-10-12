@@ -23,19 +23,14 @@ import {
 } from "@ant-design/icons";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import dayjs, { Dayjs } from "dayjs";
-import { IVaccine, BuildQueryParams } from "@/types/backend";
+import { IVaccine, BuildQueryParams, IDoseSchedule } from "@/types/backend";
 import { useCenter } from "@/hooks/useCenter";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/constants";
 import { useFamilyMember } from "@/hooks/useFamilyMember";
 
 const { Text } = Typography;
 
-interface DoseSchedule {
-  doseNumber: number;
-  date: Dayjs;
-  time: string;
-  centerId: string;
-}
+
 
 interface AppointmentProps {
   vaccine: IVaccine;
@@ -48,7 +43,7 @@ const AppointmentSection = ({
   vaccine,
   setCurrentStep,
 }: AppointmentProps) => {
-  const [doseForms, setDoseForms] = useState<DoseSchedule[]>([]);
+  const [doseForms, setDoseForms] = useState<IDoseSchedule[]>([]);
   const [firstDoseDate, setFirstDoseDate] = useState<Dayjs | null>(null);
   const [firstDoseTime, setFirstDoseTime] = useState<string>("08:00");
   const [firstDoseCenterId, setFirstDoseCenterId] = useState<string>("");
@@ -113,7 +108,7 @@ const AppointmentSection = ({
     }
 
     // Create dose forms for ALL doses (including first dose)
-    const forms: DoseSchedule[] = [];
+    const forms: IDoseSchedule[] = [];
     for (let i = 0; i < dosesRequired; i++) {
       const date = dates[i];
       if (date) {

@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes } from "@/types/backend";
+import { IAccount, IBackendRes, IUser } from "@/types/backend";
 import apiClient from "./apiClient";
 
 export interface RegisterRequest {
@@ -36,3 +36,13 @@ export async function callResgister(payload: RegisterRequest) {
   return await apiClient.post<IBackendRes<IAccount>>("/auth/register", payload);
 }
 
+/**
+ * Update user avatar
+ * @param avatarUrl - The full URL of the uploaded avatar
+ * @returns Updated user account information
+ */
+export async function updateAvatar(avatarUrl: string) {
+  return await apiClient.post<IBackendRes<IUser>>("/auth/avatar", {
+    avatarUrl: avatarUrl,
+  });
+}

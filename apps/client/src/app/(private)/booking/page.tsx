@@ -8,7 +8,7 @@ import PaymentSection from "./payment";
 import ReviewSection from "./review";
 
 import { useMessage } from "@/components/share/MessageProvider";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AppointmentSection from "./appointment";
 import { IBookingData, IDoseSchedule, IVaccine } from "@/types/backend";
 import { callGetBySku } from "@/services/vaccine.service";
@@ -19,9 +19,8 @@ import dayjs from "dayjs";
 
 const { Title, Text } = Typography;
 
-
-
 const Booking = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const slug = searchParams.get("slug");
 
@@ -171,19 +170,27 @@ const Booking = () => {
 
       // Validate first dose schedule
       const firstSchedule = doseSchedules[0];
-      if (!firstSchedule?.date || !firstSchedule?.time || !firstSchedule?.centerId) {
+      if (
+        !firstSchedule?.date ||
+        !firstSchedule?.time ||
+        !firstSchedule?.centerId
+      ) {
         error("Vui lòng chọn đầy đủ thông tin cho mũi tiêm đầu tiên!");
         return;
       }
 
       // Transform dose schedules cho các mũi từ mũi 2 trở đi (không bao gồm mũi 1)
-      const remainingSchedules = doseSchedules.slice(1).map((schedule: IDoseSchedule) => ({
-        date: schedule.date 
-          ? (typeof schedule.date === 'string' ? schedule.date : schedule.date.format("YYYY-MM-DD"))
-          : "",
-        time: schedule.time || "",
-        centerId: parseInt(String(schedule.centerId)),
-      }));
+      const remainingSchedules = doseSchedules
+        .slice(1)
+        .map((schedule: IDoseSchedule) => ({
+          date: schedule.date
+            ? typeof schedule.date === "string"
+              ? schedule.date
+              : schedule.date.format("YYYY-MM-DD")
+            : "",
+          time: schedule.time || "",
+          centerId: parseInt(String(schedule.centerId)),
+        }));
 
       // Build payload using centralized booking data
       const payload: BookingRequest = {
@@ -193,13 +200,16 @@ const Booking = () => {
             ? appointmentData.familyMemberId
             : undefined,
         centerId: parseInt(String(firstSchedule.centerId)), // Center ID của mũi tiêm đầu tiên
-        firstDoseDate: firstSchedule.date 
-          ? (typeof firstSchedule.date === 'string' ? firstSchedule.date : firstSchedule.date.format("YYYY-MM-DD"))
+        firstDoseDate: firstSchedule.date
+          ? typeof firstSchedule.date === "string"
+            ? firstSchedule.date
+            : firstSchedule.date.format("YYYY-MM-DD")
           : "",
         firstDoseTime: firstSchedule.time || "",
         amount: finalTotal,
         doseSchedules: remainingSchedules, // Chỉ chứa các mũi từ mũi 2 trở đi
-        paymentMethod: bookingData.paymentData.selectedPayment || selectedPayment,
+        paymentMethod:
+          bookingData.paymentData.selectedPayment || selectedPayment,
       };
 
       console.log("🚀 Booking payload from centralized data:", payload);
@@ -217,38 +227,41 @@ const Booking = () => {
 
       // Validate all remaining schedules have data
       const incompleteSchedules = remainingSchedules.filter(
-        (schedule: { date: string; time: string; centerId: number }) => 
+        (schedule: { date: string; time: string; centerId: number }) =>
           !schedule.date || !schedule.time || !schedule.centerId
       );
-      
+
       if (incompleteSchedules.length > 0) {
-        error(`Còn ${incompleteSchedules.length} mũi tiêm chưa đặt lịch đầy đủ!`);
+        error(
+          `Còn ${incompleteSchedules.length} mũi tiêm chưa đặt lịch đầy đủ!`
+        );
         return;
       }
       // API call
       const response = await callCreateBooking(payload);
       if (response && response.data) {
         // Update booking data state to completed
-        setBookingData(prev => ({
+        setBookingData((prev) => ({
           ...prev,
           isCompleted: true,
         }));
 
         if (response.data.method === "PAYPAL") {
           // Store booking completion state before redirect
-          sessionStorage.setItem('bookingCompleted', 'true');
-          sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+          sessionStorage.setItem("bookingCompleted", "true");
+          sessionStorage.setItem("bookingData", JSON.stringify(bookingData));
           window.location.href = response.data.paymentURL;
         } else if (response.data.method === "CASH") {
-          success("🎉 Đặt lịch thành công! Cảm ơn bạn đã sử dụng dịch vụ.");
-          
+          router.push("/success");
+          success("Booking placed successfully!");
+
           // Reset forms after successful booking
           bookingForm.resetFields();
           paymentForm.resetFields();
-          
+
           // Reset selected payment
           setSelectedPayment("CASH");
-          
+
           // Optional: Show booking summary or redirect
           console.log("✅ Booking completed successfully with data:", {
             bookingResponse: response.data.method,
@@ -257,7 +270,7 @@ const Booking = () => {
             schedulesCount: doseSchedules.length,
             paymentMethod: payload.paymentMethod,
           });
-          
+
           // Redirect to success page or show confirmation modal
           // router.push(`/booking/success?bookingId=${response.data.id}`);
         }

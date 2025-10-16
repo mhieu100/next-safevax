@@ -12,7 +12,7 @@ import {
 } from "@ant-design/icons";
 import TabEditUser from "@/components/tab/tab.edit-user";
 import VaccinationHistoryTab, { VaccinationRecord } from "./VaccinationHistoryTab";
-import AppointmentScheduleTab, { AppointmentRecord } from "./AppointmentScheduleTab";
+import AppointmentScheduleTab from "./AppointmentScheduleTab";
 import HealthRemindersTab from "./HealthRemindersTab";
 import FamilyManagerTab from "./FamilyManagerTab";
 import VaccinePassportTab from "./VaccinePassportTab";
@@ -25,7 +25,6 @@ interface ProfileTabsProps {
   editMode: boolean;
   setEditMode: (mode: boolean) => void;
   vaccinationHistory: VaccinationRecord[];
-  upcomingAppointments: AppointmentRecord[];
   onNewBooking: () => void;
 }
 
@@ -34,8 +33,6 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
   editMode,
   setEditMode,
   vaccinationHistory,
-  upcomingAppointments,
-  onNewBooking,
 }) => {
   const tabConfig = {
     "1": {
@@ -49,19 +46,13 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
       content: (
         <VaccinationHistoryTab
           vaccinationHistory={vaccinationHistory}
-          onNewBooking={onNewBooking}
         />
       ),
     },
     "3": {
       title: "Appointments",
       icon: <CalendarOutlined className="text-xl" />,
-      content: (
-        <AppointmentScheduleTab
-          upcomingAppointments={upcomingAppointments}
-          onNewBooking={onNewBooking}
-        />
-      ),
+      content: <AppointmentScheduleTab />,
     },
     "4": {
       title: "Health Reminders",

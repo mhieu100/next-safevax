@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Typography, Button, Table, Tag } from "antd";
-import { CheckCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { Typography, Table, Tag } from "antd";
+import { CheckCircleOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -18,12 +18,10 @@ export interface VaccinationRecord {
 
 interface VaccinationHistoryTabProps {
   vaccinationHistory: VaccinationRecord[];
-  onNewBooking: () => void;
 }
 
 const VaccinationHistoryTab: React.FC<VaccinationHistoryTabProps> = ({
   vaccinationHistory,
-  onNewBooking
 }) => {
   const columns = [
     {
@@ -43,7 +41,7 @@ const VaccinationHistoryTab: React.FC<VaccinationHistoryTabProps> = ({
     },
     {
       title: "Status",
-      dataIndex: "status", 
+      dataIndex: "status",
       key: "status",
       render: (status: string) => (
         <Tag color="green">
@@ -72,9 +70,6 @@ const VaccinationHistoryTab: React.FC<VaccinationHistoryTabProps> = ({
     <div>
       <div className="mb-4 flex justify-between items-center">
         <Title level={4}>Vaccination History</Title>
-        <Button type="primary" onClick={onNewBooking}>
-          <PlusOutlined /> New Booking
-        </Button>
       </div>
       <Table
         dataSource={vaccinationHistory}

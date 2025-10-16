@@ -110,6 +110,71 @@ export interface IBookingData {
   finalTotal: number;
   isCompleted: boolean;
 }
+export interface RegisterRequest {
+  user: {
+    fullName: string;
+    email: string;
+    password: string;
+  };
+  patientProfile: PatientProfile;
+}
+
+export interface PatientProfile {
+  address: string;
+  phone: string;
+  birthday: string;
+  gender: "MALE" | "FEMALE" | "OTHER";
+  identityNumber: string;
+  bloodType: "A" | "B" | "AB" | "O";
+  heightCm: number;
+  weightKg: number;
+}
+
+export interface BookingRequest {
+  vaccineId: number;
+  familyMemberId?: number;
+  centerId: number;
+  firstDoseDate: string;
+  firstDoseTime: string;
+  amount: number;
+  doseSchedules: DoseSchedule[];
+  paymentMethod: string;
+}
+
+export interface DoseSchedule {
+  date: string;
+  time: string;
+  centerId: number;
+}
+
+export interface AppointmentDetail {
+  appointmentId: number;
+  doseNumber: number;
+  scheduledDate: string;
+  scheduledTime: string;
+  centerId: number;
+  centerName: string;
+  doctorId: number | null;
+  doctorName: string | null;
+  cashierId: number | null;
+  cashierName: string | null;
+  appointmentStatus: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+}
+
+export interface UserBooking {
+  bookingId: number;
+  patientId: number;
+  patientName: string;
+  familyMemberId: number | null;
+  familyMemberName: string | null;
+  vaccineName: string;
+  totalAmount: number;
+  totalDoses: number;
+  overallStatus: "PROGRESS" | "COMPLETED" | "CANCELLED";
+  bookingStatus: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+  createdAt: string;
+  appointments: AppointmentDetail[];
+}
 
 export interface BuildQueryParams {
   current: number;

@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Card, Tag, Timeline, Spin, Empty, Alert } from "antd";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
-import { getMyBookings, UserBooking } from "@/services/booking.service";
+import { getMyBookings } from "@/services/booking.service";
 import dayjs from "dayjs";
+import { UserBooking } from "@/types/backend";
 
 const { Title, Text } = Typography;
 
@@ -36,6 +37,7 @@ const AppointmentScheduleTab: React.FC = () => {
     switch (status) {
       case "CONFIRMED": return "green";
       case "COMPLETED": return "blue";
+      case "SCHEDULED": return "cyan";
       case "PENDING": return "orange";
       case "PROGRESS": return "orange";
       case "CANCELLED": return "red";
@@ -47,6 +49,7 @@ const AppointmentScheduleTab: React.FC = () => {
     switch (status) {
       case "CONFIRMED": return "Đã xác nhận";
       case "COMPLETED": return "Hoàn thành";
+      case "SCHEDULED": return "Đã lên lịch";
       case "PENDING": return "Chờ xác nhận";
       case "PROGRESS": return "Đang tiến hành";
       case "CANCELLED": return "Đã hủy";
@@ -63,7 +66,6 @@ const AppointmentScheduleTab: React.FC = () => {
       bookingStatus: booking.bookingStatus,
       isFamily: !!booking.familyMemberId,
       totalDoses: booking.totalDoses,
-      overallStatus: booking.overallStatus
     }))
   ).sort((a, b) => 
     dayjs(a.scheduledDate).valueOf() - dayjs(b.scheduledDate).valueOf()
@@ -133,8 +135,8 @@ const AppointmentScheduleTab: React.FC = () => {
               👤 {firstApt.patientName} • {firstApt.totalDoses} mũi tiêm
             </Text>
           </div>
-          <Tag color={getStatusColor(firstApt.overallStatus)}>
-            Booking: {getStatusText(firstApt.overallStatus)}
+          <Tag color={getStatusColor(firstApt.bookingStatus)}>
+            Booking: {getStatusText(firstApt.bookingStatus)}
           </Tag>
         </div>
 

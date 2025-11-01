@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useStoreHydration } from "@/hooks/useStoreHydration";
+import { Spin } from "antd";
 
 export default function PrivateLayout({
   children,
@@ -23,11 +24,18 @@ export default function PrivateLayout({
     }
   }, [isHydrated, isAuthenticated, router]);
 
-  if (!isHydrated) {
-    return <div>Loading authentication...</div>;
+  // Nếu chưa hydrate và chưa authenticated, hiển thị loading
+  // Nhưng nếu đã authenticated (dù chưa hydrate hoàn toàn), cho phép hiển thị
+  if (!isHydrated && !isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spin size="large" tip="Loading..." />
+      </div>
+    );
   }
 
-  if (!isAuthenticated) return null;
+  // Đang redirect đến login
+  if (isHydrated && !isAuthenticated) return null;
 
   return (
     <>

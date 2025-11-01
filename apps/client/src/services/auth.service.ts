@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IUser, RegisterRequest } from "@/types/backend";
+import { IAccount, IBackendRes, IUser, RegisterRequest, UpdatePasswordRequest } from "@/types/backend";
 import apiClient from "./apiClient";
 
 export async function callLogin(username: string, password: string) {
@@ -15,6 +15,12 @@ export const callLogout = () => {
 export async function callResgister(payload: RegisterRequest) {
   return await apiClient.post<IBackendRes<IAccount>>("/auth/register", payload);
 }
+
+
+export async function callChangePassword(payload: UpdatePasswordRequest) {
+  return await apiClient.post<IBackendRes<boolean>>("/auth/update-password", payload);
+}
+
 
 /**
  * Update user avatar

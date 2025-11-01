@@ -119,6 +119,12 @@ export interface RegisterRequest {
   patientProfile: PatientProfile;
 }
 
+export interface UpdatePasswordRequest {
+  email: string;
+  oldPassword: string;
+  newPassword: string;
+}
+
 export interface PatientProfile {
   address: string;
   phone: string;
@@ -170,10 +176,29 @@ export interface UserBooking {
   vaccineName: string;
   totalAmount: number;
   totalDoses: number;
-  overallStatus: "PROGRESS" | "COMPLETED" | "CANCELLED";
   bookingStatus: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
   createdAt: string;
   appointments: AppointmentDetail[];
+}
+
+export interface OrderRequest {
+  items: ItemCart[];
+  itemCount: number;
+  paymentMethod: string;
+  totalAmount: string;
+}
+
+export interface ItemCart {
+  id: number;
+  quantity: number;
+}
+
+export interface PaymentResponse {
+  amount: number;
+  method: string;
+  paymentId: number;
+  paymentURL: string;
+  referenceId: string;
 }
 
 export interface BuildQueryParams {

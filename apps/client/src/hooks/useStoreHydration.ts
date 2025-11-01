@@ -9,26 +9,29 @@ import { useAuthStore } from '@/store/authStore'; // Import store của bạn
  * @returns {boolean} True nếu state đã được khôi phục.
  */
 export const useStoreHydration = (): boolean => {
-  const [hydrated, setHydrated] = useState(false);
+  // Kiểm tra ngay lập tức xem đã hydrate chưa để tránh flash
+  const [hydrated, setHydrated] = useState(() => 
+    useAuthStore.persist.hasHydrated()
+  );
 
   useEffect(() => {
+    // Nếu đã hydrate rồi thì không cần subscribe nữa
+    if (hydrated) return;
+
     // 💡 Lắng nghe sự kiện hydration hoàn tất của persist middleware
     const unsub = useAuthStore.persist.onFinishHydration(() => {
       setHydrated(true);
     });
 
-    // Nếu store đã hydrate xong trước khi useEffect chạy (trường hợp hiếm)
+    // Double check trong useEffect
     if (useAuthStore.persist.hasHydrated()) {
       setHydrated(true);
     }
     
     return () => {
-      // Dọn dẹp listener khi component unmount
-      // (Lưu ý: onFinishHydration không trả về hàm hủy đăng ký đơn giản,
-      // nhưng việc này an toàn trong hầu hết các kịch bản)
       unsub?.(); 
     };
-  }, []);
+  }, [hydrated]);
 
   return hydrated;
 };

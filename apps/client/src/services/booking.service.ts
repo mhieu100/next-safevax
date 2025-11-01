@@ -1,6 +1,5 @@
-import { BookingRequest, IBackendRes, UserBooking } from "@/types/backend";
+import { BookingRequest, IBackendRes, PaymentResponse, UserBooking } from "@/types/backend";
 import apiClient from "./apiClient";
-import { PaymentResponse } from "./order.service";
 
 export async function callCreateBooking(payload: BookingRequest) {
   return apiClient.post<IBackendRes<PaymentResponse>>("/bookings", payload);
@@ -12,4 +11,12 @@ export async function callCreateBooking(payload: BookingRequest) {
  */
 export async function getMyBookings() {
   return apiClient.get<IBackendRes<UserBooking[]>>("/auth/booking");
+}
+
+/**
+ * Get booking history of the current user
+ * @returns List of historical bookings with appointments
+ */
+export async function getMyBookingHistory() {
+  return apiClient.get<IBackendRes<UserBooking[]>>("/auth/history-booking");
 }

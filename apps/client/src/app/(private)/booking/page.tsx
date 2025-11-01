@@ -10,9 +10,9 @@ import ReviewSection from "./review";
 import { useMessage } from "@/components/share/MessageProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import AppointmentSection from "./appointment";
-import { IBookingData, IDoseSchedule, IVaccine } from "@/types/backend";
+import { BookingRequest, IBookingData, IDoseSchedule, IVaccine } from "@/types/backend";
 import { callGetBySku } from "@/services/vaccine.service";
-import { callCreateBooking, BookingRequest } from "@/services/booking.service";
+import { callCreateBooking } from "@/services/booking.service";
 
 import { formatPrice } from "@/utils/formatPrice";
 import dayjs from "dayjs";
@@ -572,47 +572,47 @@ const Booking = () => {
   };
 
   // Component debug hiển thị raw data (chỉ hiển thị trong development)
-  const DebugDataView = () => {
-    const appointmentData = bookingForm.getFieldsValue();
-    const paymentData = paymentForm.getFieldsValue();
+  // const DebugDataView = () => {
+  //   const appointmentData = bookingForm.getFieldsValue();
+  //   const paymentData = paymentForm.getFieldsValue();
 
-    if (process.env.NODE_ENV !== "development") return null;
+  //   if (process.env.NODE_ENV !== "development") return null;
 
-    return (
-      <Card
-        size="small"
-        className="mb-4 bg-gray-50"
-        title="🔧 Debug Data (Development Only)"
-      >
-        <Row gutter={16}>
-          <Col span={8}>
-            <Text strong className="block mb-2">
-              Booking Data State:
-            </Text>
-            <pre className="text-xs bg-white p-2 rounded border overflow-auto max-h-40">
-              {JSON.stringify(bookingData, null, 2)}
-            </pre>
-          </Col>
-          <Col span={8}>
-            <Text strong className="block mb-2">
-              Appointment Form Data:
-            </Text>
-            <pre className="text-xs bg-white p-2 rounded border overflow-auto max-h-40">
-              {JSON.stringify(appointmentData, null, 2)}
-            </pre>
-          </Col>
-          <Col span={8}>
-            <Text strong className="block mb-2">
-              Payment Form Data:
-            </Text>
-            <pre className="text-xs bg-white p-2 rounded border overflow-auto max-h-40">
-              {JSON.stringify({ ...paymentData, selectedPayment }, null, 2)}
-            </pre>
-          </Col>
-        </Row>
-      </Card>
-    );
-  };
+  //   return (
+  //     <Card
+  //       size="small"
+  //       className="mb-4 bg-gray-50"
+  //       title="🔧 Debug Data (Development Only)"
+  //     >
+  //       <Row gutter={16}>
+  //         <Col span={8}>
+  //           <Text strong className="block mb-2">
+  //             Booking Data State:
+  //           </Text>
+  //           <pre className="text-xs bg-white p-2 rounded border overflow-auto max-h-40">
+  //             {JSON.stringify(bookingData, null, 2)}
+  //           </pre>
+  //         </Col>
+  //         <Col span={8}>
+  //           <Text strong className="block mb-2">
+  //             Appointment Form Data:
+  //           </Text>
+  //           <pre className="text-xs bg-white p-2 rounded border overflow-auto max-h-40">
+  //             {JSON.stringify(appointmentData, null, 2)}
+  //           </pre>
+  //         </Col>
+  //         <Col span={8}>
+  //           <Text strong className="block mb-2">
+  //             Payment Form Data:
+  //           </Text>
+  //           <pre className="text-xs bg-white p-2 rounded border overflow-auto max-h-40">
+  //             {JSON.stringify({ ...paymentData, selectedPayment }, null, 2)}
+  //           </pre>
+  //         </Col>
+  //       </Row>
+  //     </Card>
+  //   );
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -623,7 +623,7 @@ const Booking = () => {
         />
 
         {/* Debug view trong development */}
-        <DebugDataView />
+        {/* <DebugDataView /> */}
 
         {/* Hiển thị tổng hợp data từ tất cả steps */}
         <BookingDataSummary />

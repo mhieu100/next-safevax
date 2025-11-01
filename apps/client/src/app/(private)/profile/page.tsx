@@ -6,11 +6,9 @@ import { useRouter } from "next/navigation";
 import ModalUpdatePassWord from "@/components/modal/modal.update-password";
 import ModalUpdateAvatar from "@/components/modal/modal.update-avatar";
 import CardInfoUser from "@/app/(private)/profile/components/card.info-user";
-import ProfileSidebar from "@/app/(private)/profile/components/ProfileSidebar";
-import ProfileTabs from "@/app/(private)/profile/components/ProfileTabs";
-import SettingsModal from "@/app/(private)/profile/components/SettingsModal";
-import { VaccinationRecord } from "@/app/(private)/profile/components/VaccinationHistoryTab";
-import { AppointmentRecord } from "@/app/(private)/profile/components/AppointmentScheduleTab";
+import ProfileSidebar from "@/app/(private)/profile/components/profile-sidebar";
+import ProfileTabs from "@/app/(private)/profile/components/profile-tabs";
+import SettingsModal from "@/app/(private)/profile/components/settings-modal";
 
 const Profile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -19,56 +17,6 @@ const Profile = () => {
   const [securityModalVisible, setSecurityModalVisible] = useState(false);
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const router = useRouter();
-
-  // Mock vaccination data
-  const vaccinationHistory: VaccinationRecord[] = [
-    {
-      key: "1",
-      vaccine: "COVID-19 (Pfizer)",
-      date: "2024-03-15",
-      status: "Completed",
-      nextDose: "2024-09-15",
-      batch: "PF2024-001",
-      location: "SafeVax Center - District 1",
-    },
-    {
-      key: "2",
-      vaccine: "Hepatitis B",
-      date: "2024-01-20",
-      status: "Completed",
-      nextDose: "2025-01-20",
-      batch: "HB2024-003",
-      location: "SafeVax Center - District 3",
-    },
-    {
-      key: "3",
-      vaccine: "Influenza",
-      date: "2023-12-10",
-      status: "Completed",
-      nextDose: "2024-12-10",
-      batch: "FLU2023-012",
-      location: "General Hospital",
-    },
-  ];
-
-  const upcomingAppointments: AppointmentRecord[] = [
-    {
-      key: "1",
-      vaccine: "COVID-19 Booster",
-      date: "2024-10-15",
-      time: "10:30 AM",
-      location: "SafeVax Center - District 1",
-      status: "Confirmed",
-    },
-    {
-      key: "2",
-      vaccine: "Tetanus",
-      date: "2024-11-02",
-      time: "2:00 PM",
-      location: "SafeVax Center - Thu Duc",
-      status: "Pending",
-    },
-  ];
 
   const handleNewBooking = () => {
     router.push("/booking");
@@ -106,7 +54,7 @@ const Profile = () => {
               activeTab={activeTab}
             />
           </Col>
-          
+
           <Col xs={24} lg={18}>
             <Card className="rounded-xl shadow-sm border-0">
               <ProfileTabs
@@ -114,8 +62,6 @@ const Profile = () => {
                 onTabChange={handleTabChange}
                 editMode={editMode}
                 setEditMode={setEditMode}
-                vaccinationHistory={vaccinationHistory}
-                upcomingAppointments={upcomingAppointments}
                 onNewBooking={handleNewBooking}
               />
             </Card>

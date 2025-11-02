@@ -40,7 +40,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       className="settings-modal"
     >
       <div className="py-4">
-        <div className="space-y-6">
+        <div className="!space-y-6">
           {/* Notification Settings */}
           <Card className="rounded-lg border border-gray-200">
             <div className="flex items-center justify-between mb-4">

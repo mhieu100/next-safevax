@@ -11,11 +11,11 @@ import {
   SafetyCertificateOutlined,
 } from "@ant-design/icons";
 import TabEditUser from "@/components/tab/tab.edit-user";
-import VaccinationHistoryTab, { VaccinationRecord } from "./VaccinationHistoryTab";
-import AppointmentScheduleTab from "./AppointmentScheduleTab";
-import HealthRemindersTab from "./HealthRemindersTab";
-import FamilyManagerTab from "./FamilyManagerTab";
-import VaccinePassportTab from "./VaccinePassportTab";
+import VaccinationHistoryTab from "./vaccination-history-tab";
+import AppointmentScheduleTab from "./appointment-schedule-tab";
+import HealthRemindersTab from "./health-reminders-tab";
+import FamilyManagerTab from "./family-manager-tab";
+import VaccinePassportTab from "./vaccine-passport-tab";
 
 const { Title } = Typography;
 
@@ -24,7 +24,6 @@ interface ProfileTabsProps {
   onTabChange: (key: string) => void;
   editMode: boolean;
   setEditMode: (mode: boolean) => void;
-  vaccinationHistory: VaccinationRecord[];
   onNewBooking: () => void;
 }
 
@@ -32,7 +31,6 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
   activeTab,
   editMode,
   setEditMode,
-  vaccinationHistory,
 }) => {
   const tabConfig = {
     "1": {
@@ -43,11 +41,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
     "2": {
       title: "Vaccination History",
       icon: <HistoryOutlined className="text-xl" />,
-      content: (
-        <VaccinationHistoryTab
-          vaccinationHistory={vaccinationHistory}
-        />
-      ),
+      content: <VaccinationHistoryTab />,
     },
     "3": {
       title: "Appointments",
@@ -71,7 +65,8 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
     },
   };
 
-  const currentTab = tabConfig[activeTab as keyof typeof tabConfig] || tabConfig["1"];
+  const currentTab =
+    tabConfig[activeTab as keyof typeof tabConfig] || tabConfig["1"];
 
   return (
     <div>
@@ -88,9 +83,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
       </div>
 
       {/* Tab Content */}
-      <div className="profile-tab-content">
-        {currentTab.content}
-      </div>
+      <div className="profile-tab-content">{currentTab.content}</div>
     </div>
   );
 };

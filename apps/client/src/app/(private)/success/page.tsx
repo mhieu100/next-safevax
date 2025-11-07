@@ -1,14 +1,53 @@
 "use client";
 
-import React from "react";
-import { Result, Button, Typography } from "antd";
-import { CheckCircleOutlined, HomeOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { Result, Button, Typography, Spin, message } from "antd";
+import { CheckCircleOutlined, HomeOutlined, LoadingOutlined } from "@ant-design/icons";
+import { useRouter, useSearchParams } from "next/navigation";
+import { callUpdatePaymentPaypal } from "@/services/payment.service";
 
 const { Title, Paragraph } = Typography;
 
 const Success = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [paymentUpdated, setPaymentUpdated] = useState(false);
+
+  const searchParams = useSearchParams();
+  const referenceId = searchParams.get("referenceId");
+  const type = searchParams.get("type");
+  const paymentId = searchParams.get("payment");
+
+  useEffect(() => {
+    const updatePayment = async () => {
+      if (!paymentId || !referenceId || !type) {
+        setPaymentUpdated(true); 
+        return;
+      }
+
+      try {
+        setLoading(true);
+        
+        const payload = {
+          paymentId: Number(paymentId),
+          referenceId: Number(referenceId),
+          type: type.toUpperCase() as "BOOKING" | "ORDER",
+        };
+
+        await callUpdatePaymentPaypal(payload);
+        
+        setPaymentUpdated(true);
+        message.success("Payment updated successfully!");
+      } catch (error) {
+        console.error("Failed to update payment:", error);
+        message.error("Failed to update payment status. Please contact support.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    updatePayment();
+  }, [paymentId, referenceId, type]);
 
   const handleGoHome = () => {
     router.push("/");
@@ -17,6 +56,23 @@ const Success = () => {
   const handleViewVaccines = () => {
     router.push("/vaccine");
   };
+
+  // Hiển thị loading nếu đang cập nhật payment
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 p-6">
+        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-2xl w-full text-center">
+          <Spin size="large" indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+          <Title level={3} className="mt-6 text-gray-700">
+            Processing Payment...
+          </Title>
+          <Paragraph className="text-gray-500">
+            Please wait while we confirm your payment.
+          </Paragraph>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 p-6">
@@ -27,15 +83,33 @@ const Success = () => {
         status="success"
         title={
           <Title level={2} className="text-gray-800 font-bold m-0">
-            Success!
+            {paymentUpdated ? "Payment Successful!" : "Success!"}
           </Title>
         }
         subTitle={
           <div className="mb-8">
             <Paragraph className="text-base text-gray-600 m-0">
-              Your operation has been completed successfully.
+              {paymentUpdated 
+                ? "Your payment has been processed successfully."
+                : "Your operation has been completed successfully."
+              }
             </Paragraph>
-            <Paragraph className="text-sm text-gray-500 mt-2">
+            {paymentId && referenceId && (
+              <div className="mt-4 p-4 bg-green-50 rounded-lg">
+                <Paragraph className="text-sm text-gray-600 m-0">
+                  <strong>Payment ID:</strong> {paymentId}
+                </Paragraph>
+                <Paragraph className="text-sm text-gray-600 m-0">
+                  <strong>Reference ID:</strong> {referenceId}
+                </Paragraph>
+                {type && (
+                  <Paragraph className="text-sm text-gray-600 m-0">
+                    <strong>Type:</strong> {type.toUpperCase()}
+                  </Paragraph>
+                )}
+              </div>
+            )}
+            <Paragraph className="text-sm text-gray-500 mt-4">
               Thank you for using SafeVax vaccination system.
             </Paragraph>
           </div>

@@ -9,29 +9,34 @@ import { useAuthStore } from '@/store/authStore'; // Import store của bạn
  * @returns {boolean} True nếu state đã được khôi phục.
  */
 export const useStoreHydration = (): boolean => {
-  // Kiểm tra ngay lập tức xem đã hydrate chưa để tránh flash
-  const [hydrated, setHydrated] = useState(() => 
-    useAuthStore.persist.hasHydrated()
-  );
+  // Bắt đầu với false để tránh lỗi SSR
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    // Nếu đã hydrate rồi thì không cần subscribe nữa
-    if (hydrated) return;
+    // Chỉ chạy trên client
+    const store = useAuthStore.persist;
+    
+    if (!store) {
+      // Nếu không có persist middleware, coi như đã hydrate
+      setHydrated(true);
+      return;
+    }
+
+    // Kiểm tra xem đã hydrate chưa
+    if (store.hasHydrated()) {
+      setHydrated(true);
+      return;
+    }
 
     // 💡 Lắng nghe sự kiện hydration hoàn tất của persist middleware
-    const unsub = useAuthStore.persist.onFinishHydration(() => {
+    const unsub = store.onFinishHydration(() => {
       setHydrated(true);
     });
-
-    // Double check trong useEffect
-    if (useAuthStore.persist.hasHydrated()) {
-      setHydrated(true);
-    }
     
     return () => {
       unsub?.(); 
     };
-  }, [hydrated]);
+  }, []);
 
   return hydrated;
 };

@@ -188,6 +188,12 @@ export interface OrderRequest {
   totalAmount: string;
 }
 
+export interface PaymentRequest {
+  paymentId: number;
+  referenceId: number;
+  type: "BOOKING" | "ORDER";
+}
+
 export interface ItemCart {
   id: number;
   quantity: number;

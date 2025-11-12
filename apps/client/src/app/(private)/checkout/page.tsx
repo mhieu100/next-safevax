@@ -6,17 +6,13 @@ import { Col, Form, Row } from "antd";
 import ShippingSection from "./shipping";
 import PaymentSection from "./payment";
 import ReviewSection from "./review";
-import {
-  BankOutlined,
-  DollarOutlined,
-  PayCircleOutlined,
-  WalletOutlined,
-} from "@ant-design/icons";
+
 import useCartStore from "@/store/cartStore";
 import SumarySection from "./sumary";
-import { callCreateOrder, OrderRequest } from "@/services/order.service";
+import { callCreateOrder } from "@/services/order.service";
 import { useMessage } from "@/components/share/MessageProvider";
 import { useRouter } from "next/navigation";
+import { OrderRequest } from "@/types/backend";
 
 
 const Checkout = () => {
@@ -67,7 +63,10 @@ const Checkout = () => {
       if (response && response.data) {
         if (response.data.method === "PAYPAL") {
           window.location.href = response.data.paymentURL;
-        } else if (response.data.method === "CASH") {
+        } else if (response.data.method === "BANK") {
+          console.log("bank")
+          window.location.href = response.data.paymentURL;
+        } else {
           router.push("/success");
           success("Order placed successfully!");
           shippingForm.resetFields();

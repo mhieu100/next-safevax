@@ -1,4 +1,4 @@
-import { IBackendRes, OrderRequest } from "@/types/backend";
+import { IBackendRes, OrderRequest, PaymentResponse } from "@/types/backend";
 import apiClient from "./apiClient";
 
 export async function callCreateOrder(payload: OrderRequest) {

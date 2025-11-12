@@ -10,7 +10,12 @@ import ReviewSection from "./review";
 import { useMessage } from "@/components/share/MessageProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import AppointmentSection from "./appointment";
-import { BookingRequest, IBookingData, IDoseSchedule, IVaccine } from "@/types/backend";
+import {
+  BookingRequest,
+  IBookingData,
+  IDoseSchedule,
+  IVaccine,
+} from "@/types/backend";
 import { callGetBySku } from "@/services/vaccine.service";
 import { callCreateBooking } from "@/services/booking.service";
 
@@ -251,7 +256,11 @@ const Booking = () => {
           sessionStorage.setItem("bookingCompleted", "true");
           sessionStorage.setItem("bookingData", JSON.stringify(bookingData));
           window.location.href = response.data.paymentURL;
-        } else if (response.data.method === "CASH") {
+        } else if (response.data.method === "BANK") {
+          sessionStorage.setItem("bookingCompleted", "true");
+          sessionStorage.setItem("bookingData", JSON.stringify(bookingData));
+          window.location.href = response.data.paymentURL;
+        } else {
           router.push("/success");
           success("Booking placed successfully!");
 

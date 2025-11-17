@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Typography, Card, Tag, Timeline, Spin, Empty, Alert } from "antd";
-import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import { Typography, Card, Tag, Timeline, Spin, Empty, Alert, Button } from "antd";
+import { CheckCircleOutlined, ClockCircleOutlined, CalendarOutlined } from "@ant-design/icons";
 import { getMyBookings } from "@/services/booking.service";
 import dayjs from "dayjs";
-import { UserBooking } from "@/types/backend";
+import { AppointmentDetail, UserBooking } from "@/types/backend";
+import RescheduleAppointmentModal from "@/components/modal/modal.reschedule-appointment";
 
 const { Title, Text } = Typography;
 
@@ -13,6 +14,8 @@ const AppointmentScheduleTab: React.FC = () => {
   const [bookings, setBookings] = useState<UserBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<AppointmentDetail | null>(null);
 
   useEffect(() => {
     fetchBookings();
@@ -39,6 +42,7 @@ const AppointmentScheduleTab: React.FC = () => {
       case "COMPLETED": return "blue";
       case "SCHEDULED": return "cyan";
       case "PENDING": return "orange";
+      case "PENDING_APPROVAL": return "gold";
       case "PROGRESS": return "orange";
       case "CANCELLED": return "red";
       default: return "default";
@@ -51,10 +55,20 @@ const AppointmentScheduleTab: React.FC = () => {
       case "COMPLETED": return "Hoàn thành";
       case "SCHEDULED": return "Đã lên lịch";
       case "PENDING": return "Chờ xác nhận";
+      case "PENDING_APPROVAL": return "Chờ duyệt đổi lịch";
       case "PROGRESS": return "Đang tiến hành";
       case "CANCELLED": return "Đã hủy";
       default: return status;
     }
+  };
+
+  const handleReschedule = (appointment: AppointmentDetail) => {
+    setSelectedAppointment(appointment);
+    setRescheduleModalOpen(true);
+  };
+
+  const handleRescheduleSuccess = () => {
+    fetchBookings(); // Reload data after successful reschedule
   };
 
   const allAppointments = bookings.flatMap(booking => 
@@ -173,8 +187,31 @@ const AppointmentScheduleTab: React.FC = () => {
                           <Text type="secondary">👨‍⚕️ BS: {apt.doctorName}</Text>
                         </div>
                       )}
+                      {apt.appointmentStatus === "PENDING_APPROVAL" && (
+                        <div className="mt-2 p-2 bg-yellow-50 rounded border border-yellow-200">
+                          <Text type="warning" className="text-xs">
+                            ⏳ Đã gửi yêu cầu đổi lịch. Vui lòng chờ nhân viên cơ sở liên hệ xác nhận.
+                          </Text>
+                        </div>
+                      )}
                     </div>
                   </div>
+
+                  {/* Reschedule button - only for future appointments that are not completed/cancelled/pending_approval */}
+                  {apt.appointmentStatus !== "COMPLETED" && 
+                   apt.appointmentStatus !== "CANCELLED" &&
+                   apt.appointmentStatus !== "PENDING_APPROVAL" &&
+                   dayjs(apt.scheduledDate).isAfter(dayjs()) && (
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<CalendarOutlined />}
+                      onClick={() => handleReschedule(apt)}
+                      className="ml-2"
+                    >
+                      Đổi lịch
+                    </Button>
+                  )}
                 </div>
               </div>
             ),
@@ -223,6 +260,16 @@ const AppointmentScheduleTab: React.FC = () => {
           <li>• Ăn uống đầy đủ trước khi tiêm</li>
         </ul>
       </Card>
+
+      {/* Reschedule Modal */}
+      {selectedAppointment && (
+        <RescheduleAppointmentModal
+          open={rescheduleModalOpen}
+          onClose={() => setRescheduleModalOpen(false)}
+          appointment={selectedAppointment}
+          onSuccess={handleRescheduleSuccess}
+        />
+      )}
     </div>
   );
 };

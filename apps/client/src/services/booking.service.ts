@@ -20,3 +20,17 @@ export async function getMyBookings() {
 export async function getMyBookingHistory() {
   return apiClient.get<IBackendRes<UserBooking[]>>("/auth/history-booking");
 }
+
+/**
+ * Reschedule an appointment
+ * @param payload - Reschedule request data
+ * @returns Updated appointment information
+ */
+export async function rescheduleAppointment(payload: {
+  appointmentId: number;
+  desiredDate: string;
+  desiredTime: string;
+  reason?: string;
+}) {
+  return apiClient.put<IBackendRes<unknown>>("/appointments/reschedule", payload);
+}

@@ -7,6 +7,7 @@ export interface FamilyMemberRequest {
   relationship: string;
   phone?: string;
   gender: "MALE" | "FEMALE";
+  identityNumber: string;
 }
 
 export interface FamilyMemberResponse {
@@ -16,6 +17,7 @@ export interface FamilyMemberResponse {
   relationship: string;
   phone?: string;
   gender: "MALE" | "FEMALE";
+  identityNumber: string;
   createdAt?: string;
   updatedAt?: string;
 }

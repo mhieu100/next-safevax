@@ -164,7 +164,7 @@ export interface AppointmentDetail {
   doctorName: string | null;
   cashierId: number | null;
   cashierName: string | null;
-  appointmentStatus: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+  appointmentStatus: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "PENDING_APPROVAL";
 }
 
 export interface UserBooking {

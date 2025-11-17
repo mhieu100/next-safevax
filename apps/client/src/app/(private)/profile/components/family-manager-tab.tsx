@@ -142,6 +142,7 @@ const FamilyManagerTab = () => {
       dateOfBirth: member.dateOfBirth ? dayjs(member.dateOfBirth) : null,
       gender: member.gender,
       phone: member.phone,
+      identityNumber: member.identityNumber,
       bloodType: member.bloodType,
       allergies: member.allergies,
       emergencyContact: member.emergencyContact,
@@ -158,10 +159,13 @@ const FamilyManagerTab = () => {
     form.validateFields().then((values) => {
       const apiData: FamilyMemberRequest = {
         fullName: values.fullName,
-        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : '',
+        dateOfBirth: values.dateOfBirth
+          ? values.dateOfBirth.format("YYYY-MM-DD")
+          : "",
         relationship: values.relationship,
         phone: values.phone,
         gender: values.gender,
+        identityNumber: values.identityNumber,
       };
 
       if (editingMember) {
@@ -384,6 +388,16 @@ const FamilyManagerTab = () => {
               rules={[{ required: true, message: "Please enter name" }]}
             >
               <Input placeholder="Enter full name" />
+            </Form.Item>
+
+            <Form.Item
+              name="identityNumber"
+              label="Identity Number"
+              rules={[
+                { required: true, message: "Please enter identity number" },
+              ]}
+            >
+              <Input placeholder="Enter full identity number" />
             </Form.Item>
 
             <Form.Item

@@ -1,135 +1,196 @@
-# Turborepo starter
+# SafeVax - Vaccine Management Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern, full-featured vaccine management and booking platform built with Next.js 15, featuring blockchain integration for transparent vaccine tracking and comprehensive patient management.
 
-## Using this example
+## Features
 
-Run the following command:
+### Core Functionality
+- **Vaccine Catalog & Discovery**: Browse and search vaccines with advanced filtering by country, manufacturer, price range, and ratings
+- **Smart Booking System**: Multi-dose scheduling with automatic reminder system for follow-up vaccinations
+- **Shopping Cart & Checkout**: Add multiple vaccines, manage quantities, and complete bookings with various payment methods
+- **User Profiles**: Comprehensive patient profiles with health information, vaccination history, and family member management
+- **Center Locator**: Find nearby vaccination centers with real-time availability
 
-```sh
-npx create-turbo@latest
+### Advanced Features
+- **Blockchain Integration**: Transparent vaccine tracking and verification using blockchain technology
+- **Multi-Payment Support**: Cash, bank transfer, PayPal, and MetaMask cryptocurrency payments
+- **Family Management**: Manage vaccination records for multiple family members
+- **Health Reminders**: Automated notifications for upcoming vaccinations and health checkups
+- **Real-time Updates**: WebSocket integration for live booking updates and notifications
+
+### Technical Highlights
+- **Internationalization**: Full i18n support with `next-i18next`
+- **Form Management**: Type-safe forms with `react-hook-form` and `zod` validation
+- **State Management**: Efficient global state with Zustand
+- **Data Fetching**: Smart caching and synchronization with TanStack Query (React Query)
+- **Modern UI**: Ant Design components with Tailwind CSS v4 styling
+- **Type Safety**: Full TypeScript coverage with strict mode enabled
+
+## Tech Stack
+
+### Framework & Core
+- **Next.js 15.5.4** - React framework with App Router and Turbopack
+- **React 18.2.0** - UI library
+- **TypeScript 5+** - Static type checking
+
+### UI & Styling
+- **Ant Design 5.27+** - Enterprise-level UI components
+- **Tailwind CSS 4** - Utility-first CSS framework
+- **@ant-design/icons** - Icon library
+
+### State & Data Management
+- **Zustand 5.0** - Lightweight state management
+- **TanStack Query 5.90+** - Server state management and caching
+- **Axios 1.12+** - HTTP client with interceptors
+
+### Forms & Validation
+- **React Hook Form 7.63+** - Performant form management
+- **Zod 4.1+** - TypeScript-first schema validation
+- **@hookform/resolvers** - Form validation integration
+
+### Internationalization
+- **i18next 25.5+** - i18n framework
+- **react-i18next 16.0+** - React i18n bindings
+- **next-i18next 15.4+** - Next.js i18n integration
+
+### Real-time & Blockchain
+- **Socket.io Client 4.8** - WebSocket client for real-time features
+- **Web3** integration for MetaMask payments
+
+### Development Tools
+- **ESLint 9** - Code linting
+- **PostCSS** - CSS processing
+- **pnpm 9.0** - Fast, disk space efficient package manager
+
+## Getting Started
+
+### Prerequisites
+- Node.js >= 18
+- pnpm 9.0.0 or later
+
+### Installation
+
+```bash
+# Install dependencies
+pnpm install
 ```
 
-## What's inside?
+### Development
 
-This Turborepo includes the following packages/apps:
+```bash
+# Start development server with Turbopack
+pnpm dev
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+# The app will be available at:
+# - Local:   http://localhost:3000
+# - Network: http://[your-ip]:3000
+```
 
 ### Build
 
-To build all apps and packages, run the following command:
+```bash
+# Build for production
+pnpm build
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+# Start production server
+pnpm start
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### Linting
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+# Run ESLint
+pnpm lint
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
+## Project Structure
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+safevax-repo/
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── (auth)/            # Authentication routes (login, register, etc.)
+│   │   ├── (public)/          # Public routes (home, vaccines, etc.)
+│   │   └── (private)/         # Protected routes (profile, bookings, etc.)
+│   ├── components/            # Reusable React components
+│   │   ├── blockchain/        # Blockchain-related components
+│   │   ├── card/              # Card components (vaccines, users, etc.)
+│   │   ├── dropdown/          # Dropdown components
+│   │   ├── modal/             # Modal dialogs
+│   │   ├── share/             # Shared components (providers, layouts)
+│   │   └── tab/               # Tab components
+│   ├── contexts/              # React Context providers (Socket, etc.)
+│   ├── hooks/                 # Custom React hooks
+│   ├── services/              # API service layer
+│   ├── store/                 # Zustand stores (auth, cart, etc.)
+│   ├── types/                 # TypeScript type definitions
+│   ├── utils/                 # Utility functions
+│   ├── constants/             # Application constants
+│   └── schemas/               # Zod validation schemas
+├── public/                    # Static assets
+├── next.config.ts            # Next.js configuration
+├── tsconfig.json             # TypeScript configuration
+├── eslint.config.mjs         # ESLint configuration
+├── postcss.config.mjs        # PostCSS configuration
+└── package.json              # Project dependencies
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## Key Routes
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+- `/` - Home page with featured vaccines
+- `/vaccine` - Vaccine catalog with filtering
+- `/vaccine/[slug]` - Vaccine detail page
+- `/cart` - Shopping cart
+- `/checkout` - Checkout and payment
+- `/booking` - Booking management
+- `/profile` - User profile and health records
+- `/blockchain` - Blockchain tracking
+- `/login` - User authentication
+- `/register` - New user registration
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+## Environment Variables
 
-### Remote Caching
+Create a `.env.local` file in the root directory:
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+```env
+# API Configuration
+NEXT_PUBLIC_API_URL=your_api_url
+NEXT_PUBLIC_SOCKET_URL=your_socket_url
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+# Payment Integration
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=your_paypal_client_id
+NEXT_PUBLIC_METAMASK_NETWORK=your_metamask_network
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## Features in Detail
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### Vaccine Booking Flow
+1. Browse vaccine catalog
+2. View detailed vaccine information (dosage, price, manufacturer, etc.)
+3. Add to cart or book immediately
+4. Select vaccination center and schedule
+5. Manage multi-dose appointments
+6. Complete payment (multiple methods supported)
+7. Receive booking confirmation and reminders
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+### User Management
+- Secure authentication with JWT
+- Profile management with health information
+- Family member profiles
+- Vaccination history tracking
+- Health reminder system
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+### Payment Methods
+- Cash on arrival
+- Bank transfer
+- PayPal integration
+- MetaMask cryptocurrency payments
 
-## Useful Links
+## Performance
 
-Learn more about the power of Turborepo:
+- **Fast Refresh**: Sub-second HMR with Turbopack
+- **Optimized Images**: Automatic image optimization with next/image
+- **Code Splitting**: Automatic route-based code splitting
+- **Static Generation**: Pre-rendered static pages where possible
+- **Optimized Bundle**: Tree-shaking and minification in production
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)

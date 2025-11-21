@@ -1,13 +1,13 @@
 "use client";
 
-import { User } from "@/types/user";
+import { IUser } from "@/types/backend";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: User | null;
-  setAuth: (user: User, token: string) => void;
+  user: IUser | null;
+  setAuth: (user: IUser, token: string) => void;
   logout: () => void;
 }
 

@@ -42,7 +42,7 @@ const VaccineModeCard = ({ vaccine }: VaccineModeCardProps) => {
       <div className="flex gap-6">
         <div
           className="relative group cursor-pointer"
-          onClick={() => router.push(`/vaccine/${vaccine.sku}`)}
+          onClick={() => router.push(`/vaccine/${vaccine.slug}`)}
         >
           <div className="w-32 h-32 relative">
             <Image
@@ -57,7 +57,7 @@ const VaccineModeCard = ({ vaccine }: VaccineModeCardProps) => {
             <Title
               level={4}
               className="mb-1 cursor-pointer hover:text-blue-600 transition-colors"
-              onClick={() => router.push(`/vaccine/${vaccine.sku}`)}
+              onClick={() => router.push(`/vaccine/${vaccine.slug}`)}
               ellipsis={{ rows: 1 }}
             >
               {vaccine.name}
@@ -99,7 +99,7 @@ const VaccineModeCard = ({ vaccine }: VaccineModeCardProps) => {
             <Space>
               <Button
                 icon={<EyeOutlined />}
-                onClick={() => router.push(`/vaccine/${vaccine.sku}`)}
+                onClick={() => router.push(`/vaccine/${vaccine.slug}`)}
               >
                 View
               </Button>

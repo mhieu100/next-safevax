@@ -60,7 +60,7 @@ export const getImageProps = (
     alt,
     fallback: getDefaultVaccineImage(),
     placeholder: "💉 Loading...",
-    onError: (event: Event) => {
+    onError: (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
       const img = event.target as HTMLImageElement;
       console.error("Image load failed:", {
         originalUrl: imageUrl,
@@ -69,7 +69,7 @@ export const getImageProps = (
         targetSrc: img?.src,
       });
     },
-    onLoad: (event: Event) => {
+    onLoad: (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
       const img = event.target as HTMLImageElement;
       console.log("Image loaded successfully:", {
         src,

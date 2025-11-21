@@ -1,6 +1,8 @@
 import { IAccount, IBackendRes, IUser, RegisterRequest, UpdatePasswordRequest } from "@/types/backend";
 import apiClient from "./apiClient";
 
+export type { RegisterRequest, UpdatePasswordRequest };
+
 export async function callLogin(username: string, password: string) {
   return await apiClient.post<IBackendRes<IAccount>>("/auth/login/password", {
     username,
